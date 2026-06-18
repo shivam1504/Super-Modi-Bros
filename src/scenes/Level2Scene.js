@@ -19,17 +19,19 @@ export default class Level2Scene extends Phaser.Scene {
 
     // Create STATIC ground
     const ground = this.physics.add.staticImage(400, 580, "platform");
-    ground.setDisplaySize(800, 40);
+    ground.setDisplaySize(800, 40).refreshBody();
 
     // Create FLOATING platforms (3 levels)
     const platform1 = this.physics.add.staticImage(300, 450, "platform");
-    platform1.setDisplaySize(150, 30);
+    platform1.setDisplaySize(150, 30).refreshBody();
 
+    // Create FLOATING platforms (3 levels) - Platform 2
     const platform2 = this.physics.add.staticImage(600, 350, "platform");
-    platform2.setDisplaySize(120, 30);
+    platform2.setDisplaySize(120, 30).refreshBody();
 
+    // Create FLOATING platforms (3 levels) - Platform 3
     const platform3 = this.physics.add.staticImage(200, 250, "platform");
-    platform3.setDisplaySize(100, 30);
+    platform3.setDisplaySize(100, 30).refreshBody();
 
     // Create player
     this.player = this.physics.add.sprite(100, 450, "player");

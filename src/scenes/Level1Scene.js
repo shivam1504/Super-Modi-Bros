@@ -18,14 +18,14 @@ export default class Level1Scene extends Phaser.Scene {
 
     // Create ground platform
     const platform = this.physics.add.staticImage(400, 580, "platform");
-    platform.setDisplaySize(800, 40);
+    platform.setDisplaySize(800, 40).refreshBody();
 
     // Create a couple of middle floating platforms to make it a platformer
     const floatPlatform1 = this.physics.add.staticImage(300, 440, "platform");
-    floatPlatform1.setDisplaySize(180, 20);
+    floatPlatform1.setDisplaySize(180, 20).refreshBody();
 
     const floatPlatform2 = this.physics.add.staticImage(550, 320, "platform");
-    floatPlatform2.setDisplaySize(180, 20);
+    floatPlatform2.setDisplaySize(180, 20).refreshBody();
 
     // Create player (Modi character)
     this.player = this.physics.add.sprite(100, 450, "player");
