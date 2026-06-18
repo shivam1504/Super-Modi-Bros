@@ -116,6 +116,9 @@ export default class Level1Scene extends Phaser.Scene {
 
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
+    
+    // Prevent browser scrolling when using arrow keys
+    this.input.keyboard.addCapture([ 'UP', 'DOWN', 'LEFT', 'RIGHT' ]);
   }
 
   showPrompt(msg) {
@@ -148,9 +151,14 @@ export default class Level1Scene extends Phaser.Scene {
       this.player.anims.play("turn", true);
     }
 
-    // Jump
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
+    // Jump (support both touching down on platforms and blocked down on bounds)
+    if (this.cursors.up.isDown && (this.player.body.touching.down || this.player.body.blocked.down)) {
       this.player.setVelocityY(-450);
+    }
+
+    // Fast fall using Down Arrow in mid-air
+    if (this.cursors.down.isDown && !(this.player.body.touching.down || this.player.body.blocked.down)) {
+      this.player.setVelocityY(400);
     }
   }
 }
