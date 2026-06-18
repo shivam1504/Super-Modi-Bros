@@ -1,4 +1,5 @@
 import { createAnimations } from "../utils/animations.js";
+import { createTouchControls } from "../utils/touch-controls.js";
 
 export default class Level1Scene extends Phaser.Scene {
   constructor() {
@@ -119,6 +120,9 @@ export default class Level1Scene extends Phaser.Scene {
     
     // Prevent browser scrolling when using arrow keys
     this.input.keyboard.addCapture([ 'UP', 'DOWN', 'LEFT', 'RIGHT' ]);
+
+    // Setup touch controls for mobile
+    createTouchControls(this);
   }
 
   showPrompt(msg) {
@@ -139,11 +143,16 @@ export default class Level1Scene extends Phaser.Scene {
   }
 
   update() {
-    // Left/Right movement
-    if (this.cursors.left.isDown) {
+    // Left/Right movement (supports keyboard and touch controls)
+    const leftDown = this.cursors.left.isDown || this.touchLeft;
+    const rightDown = this.cursors.right.isDown || this.touchRight;
+    const upDown = this.cursors.up.isDown || this.touchUp;
+    const downDown = this.cursors.down.isDown || this.touchDown;
+
+    if (leftDown) {
       this.player.setVelocityX(-200);
       this.player.anims.play("left", true);
-    } else if (this.cursors.right.isDown) {
+    } else if (rightDown) {
       this.player.setVelocityX(200);
       this.player.anims.play("right", true);
     } else {
@@ -152,12 +161,12 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     // Jump (support both touching down on platforms and blocked down on bounds)
-    if (this.cursors.up.isDown && (this.player.body.touching.down || this.player.body.blocked.down)) {
+    if (upDown && (this.player.body.touching.down || this.player.body.blocked.down)) {
       this.player.setVelocityY(-450);
     }
 
     // Fast fall using Down Arrow in mid-air
-    if (this.cursors.down.isDown && !(this.player.body.touching.down || this.player.body.blocked.down)) {
+    if (downDown && !(this.player.body.touching.down || this.player.body.blocked.down)) {
       this.player.setVelocityY(400);
     }
   }
