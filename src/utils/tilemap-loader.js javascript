@@ -1,0 +1,96 @@
+/**
+ * Tilemap Loader Utility
+ * Handles loading and parsing Tiled JSON maps for Phaser 3
+ */
+
+export function loadTilemap(scene, mapKey, tilesetKey, layerNames) {
+    /**
+     * Load a Tiled map and create physics-enabled layers
+     * @param {Phaser.Scene} scene - The Phaser scene
+     * @param {string} mapKey - Key for the loaded tilemap JSON
+     * @param {string} tilesetKey - Key for the tileset image
+     * @param {string[]} layerNames - Array of layer names to load
+     * @returns {object} - Object containing created layers
+     */
+    
+    // Load the tilemap JSON
+    scene.load.tilemapTiledJSON(mapKey, `assets/tilemaps/${mapKey}.json`);
+    
+    // Load the tileset image
+    scene.load.image(tilesetKey, `assets/tilemaps/tileset.png`);
+    
+    // Start loading
+    scene.load.start();
+    
+    // Wait for load to complete
+    scene.load.on('complete', () => {
+        console.log(`Tilemap ${mapKey} loaded successfully`);
+    });
+    
+    return { mapKey, tilesetKey, layerNames };
+}
+
+export function createTilemapLayers(scene, mapKey, tilesetKey, layerConfig) {
+    /**
+     * Create tilemap layers with collision
+     * @param {Phaser.Scene} scene - The Phaser scene
+     * @param {string} mapKey - Key for the loaded tilemap
+     * @param {string} tilesetKey - Key for the tileset
+     * @param {object} layerConfig - Configuration for each layer
+     * @returns {object} - Object containing created layers
+     */
+    
+    // Create the tilemap
+    const map = scene.make.tilemap({ key: mapKey });
+    
+    // Add the tileset
+    const tileset = map.addTilesetImage(tilesetKey);
+    
+    const layers = {};
+    
+    // Create each layer
+    layerConfig.forEach(config => {
+        const layer = map.createLayer(config.name, tileset, config.x || 0, config.y || 0);
+        
+        if (config.collides) {
+            // Set collision for tiles with 'collides' property
+            layer.setCollisionByProperty({ collides: true });
+            
+            // Enable physics
+            scene.physics.add.existing(layer, true);
+        }
+        
+        layers[config.name] = layer;
+    });
+    
+    return layers;
+}
+
+export function createCollectiblesFromTilemap(scene, mapKey, objectGroupName, spriteKey, repeatCount) {
+    /**
+     * Create collectible objects from tilemap object layer
+     * @param {Phaser.Scene} scene - The Phaser scene
+     * @param {string} mapKey - Key for the loaded tilemap
+     * @param {string} objectGroupName - Name of the object layer in Tiled
+     * @param {string} spriteKey - Key for the collectible sprite
+     * @param {number} repeatCount - Number of collectibles to create
+     * @returns {Phaser.Physics.Arcade.Group} - Group of collectibles
+     */
+    
+    const map = scene.make.tilemap({ key: mapKey });
+    const objectLayer = map.getObjectLayer(objectGroupName);
+    
+    const collectibles = scene.physics.add.group();
+    
+    if (objectLayer && objectLayer.objects) {
+        objectLayer.objects.forEach((obj, index) => {
+            if (index < repeatCount) {
+                const collectible = collectibles.create(obj.x, obj.y, spriteKey);
+                collectible.setBounceY(0.3);
+                collectible.setDisplaySize(30, 30);
+            }
+        });
+    }
+    
+    return collectibles;
+}
