@@ -1,4 +1,5 @@
 import { createAnimations } from "../utils/animations.js";
+import { createTouchControls } from "../utils/touch-controls.js";
 
 export default class Level2Scene extends Phaser.Scene {
   constructor() {
@@ -18,17 +19,19 @@ export default class Level2Scene extends Phaser.Scene {
 
     // Create STATIC ground
     const ground = this.physics.add.staticImage(400, 580, "platform");
-    ground.setDisplaySize(800, 40);
+    ground.setDisplaySize(800, 40).refreshBody();
 
     // Create FLOATING platforms (3 levels)
     const platform1 = this.physics.add.staticImage(300, 450, "platform");
-    platform1.setDisplaySize(150, 30);
+    platform1.setDisplaySize(150, 30).refreshBody();
 
+    // Create FLOATING platforms (3 levels) - Platform 2
     const platform2 = this.physics.add.staticImage(600, 350, "platform");
-    platform2.setDisplaySize(120, 30);
+    platform2.setDisplaySize(120, 30).refreshBody();
 
+    // Create FLOATING platforms (3 levels) - Platform 3
     const platform3 = this.physics.add.staticImage(200, 250, "platform");
-    platform3.setDisplaySize(100, 30);
+    platform3.setDisplaySize(100, 30).refreshBody();
 
     // Create player
     this.player = this.physics.add.sprite(100, 450, "player");
@@ -93,6 +96,12 @@ export default class Level2Scene extends Phaser.Scene {
 
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    // Prevent browser scrolling when using arrow keys
+    this.input.keyboard.addCapture([ 'UP', 'DOWN', 'LEFT', 'RIGHT' ]);
+
+    // Setup touch controls for mobile
+    createTouchControls(this);
 
     // Animations
     createAnimations(this);
@@ -185,10 +194,16 @@ export default class Level2Scene extends Phaser.Scene {
   }
 
   update() {
-    if (this.cursors.left.isDown) {
+    // Left/Right movement (supports keyboard and touch controls)
+    const leftDown = this.cursors.left.isDown || this.touchLeft;
+    const rightDown = this.cursors.right.isDown || this.touchRight;
+    const upDown = this.cursors.up.isDown || this.touchUp;
+    const downDown = this.cursors.down.isDown || this.touchDown;
+
+    if (leftDown) {
       this.player.setVelocityX(-200);
       this.player.anims.play("left", true);
-    } else if (this.cursors.right.isDown) {
+    } else if (rightDown) {
       this.player.setVelocityX(200);
       this.player.anims.play("right", true);
     } else {
@@ -196,9 +211,14 @@ export default class Level2Scene extends Phaser.Scene {
       this.player.anims.play("turn", true);
     }
 
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
+    if (upDown && (this.player.body.touching.down || this.player.body.blocked.down)) {
       this.player.setVelocityY(-450);
       this.safePlaySound("jump");
+    }
+
+    // Fast fall using Down Arrow in mid-air
+    if (downDown && !(this.player.body.touching.down || this.player.body.blocked.down)) {
+      this.player.setVelocityY(400);
     }
   }
 }

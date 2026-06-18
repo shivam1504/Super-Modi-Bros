@@ -1,4 +1,5 @@
 import { createAnimations } from "../utils/animations.js";
+import { createTouchControls } from "../utils/touch-controls.js";
 
 export default class Level1Scene extends Phaser.Scene {
   constructor() {
@@ -17,14 +18,14 @@ export default class Level1Scene extends Phaser.Scene {
 
     // Create ground platform
     const platform = this.physics.add.staticImage(400, 580, "platform");
-    platform.setDisplaySize(800, 40);
+    platform.setDisplaySize(800, 40).refreshBody();
 
     // Create a couple of middle floating platforms to make it a platformer
     const floatPlatform1 = this.physics.add.staticImage(300, 440, "platform");
-    floatPlatform1.setDisplaySize(180, 20);
+    floatPlatform1.setDisplaySize(180, 20).refreshBody();
 
     const floatPlatform2 = this.physics.add.staticImage(550, 320, "platform");
-    floatPlatform2.setDisplaySize(180, 20);
+    floatPlatform2.setDisplaySize(180, 20).refreshBody();
 
     // Create player (Modi character)
     this.player = this.physics.add.sprite(100, 450, "player");
@@ -116,6 +117,12 @@ export default class Level1Scene extends Phaser.Scene {
 
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
+    
+    // Prevent browser scrolling when using arrow keys
+    this.input.keyboard.addCapture([ 'UP', 'DOWN', 'LEFT', 'RIGHT' ]);
+
+    // Setup touch controls for mobile
+    createTouchControls(this);
   }
 
   showPrompt(msg) {
@@ -136,11 +143,16 @@ export default class Level1Scene extends Phaser.Scene {
   }
 
   update() {
-    // Left/Right movement
-    if (this.cursors.left.isDown) {
+    // Left/Right movement (supports keyboard and touch controls)
+    const leftDown = this.cursors.left.isDown || this.touchLeft;
+    const rightDown = this.cursors.right.isDown || this.touchRight;
+    const upDown = this.cursors.up.isDown || this.touchUp;
+    const downDown = this.cursors.down.isDown || this.touchDown;
+
+    if (leftDown) {
       this.player.setVelocityX(-200);
       this.player.anims.play("left", true);
-    } else if (this.cursors.right.isDown) {
+    } else if (rightDown) {
       this.player.setVelocityX(200);
       this.player.anims.play("right", true);
     } else {
@@ -148,9 +160,14 @@ export default class Level1Scene extends Phaser.Scene {
       this.player.anims.play("turn", true);
     }
 
-    // Jump
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
+    // Jump (support both touching down on platforms and blocked down on bounds)
+    if (upDown && (this.player.body.touching.down || this.player.body.blocked.down)) {
       this.player.setVelocityY(-450);
+    }
+
+    // Fast fall using Down Arrow in mid-air
+    if (downDown && !(this.player.body.touching.down || this.player.body.blocked.down)) {
+      this.player.setVelocityY(400);
     }
   }
 }
