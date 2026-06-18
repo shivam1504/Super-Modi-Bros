@@ -1,253 +1,21 @@
-// import { createTilemapLayers, createCollectiblesFromTilemap } from '../utils/tilemap-loader.js';
-
-// class Level2Scene extends Phaser.Scene {
-//     constructor() {
-//         super({ key: 'Level2Scene' });
-//     }
-
-//     preload() {
-//         // Load tilemap assets
-//         this.load.tilemapTiledJSON('rssMap', 'assets/tilemaps/rss-journey.json');
-//         this.load.image('tileset', 'assets/tilemaps/tileset.png');
-
-//         // Load player and game assets
-//         this.load.image('player', 'assets/sprites/modi-player.png');
-//         this.load.image('platform', 'assets/sprites/platforms.png');
-//         this.load.image('rssBadge', 'assets/sprites/rss-badge.png');
-//         this.load.image('enemy-vendor', 'assets/sprites/vendor.png');
-
-//         // Load sounds
-//         this.load.audio('jump', 'assets/sounds/jump.mp3');
-//         this.load.audio('collect', 'assets/sounds/collect.mp3');
-//         this.load.audio('background', 'assets/sounds/rss-bg.mp3');
-//     }
-
-//     create() {
-//         // === CREATE TILEMAP LAYERS ===
-//         const layerConfig = [
-//             { name: 'Ground', collides: true },
-//             { name: 'Platforms', collides: true },
-//             { name: 'Background', collides: false },
-//             { name: 'Decorations', collides: false }
-//         ];
-
-//         const layers = createTilemapLayers(
-//             this,
-//             'rssMap',
-//             'tileset',
-//             layerConfig
-//         );
-
-//         // === CREATE PLAYER (Modi as young RSS volunteer) ===
-//         this.player = this.physics.add.sprite(100, 300, 'player');
-//         this.player.setBounce(0.1);
-//         this.player.setCollideWorldBounds(true);
-//         this.player.body.setDrag(100, 0);
-//         this.player.body.setMaxVelocity(300, 600);
-//         this.player.setDisplaySize(40, 60);
-
-//         // Collide player with ground
-//         this.physics.add.collider(this.player, layers.Ground);
-//         this.physics.add.collider(this.player, layers.Platforms);
-
-//         // === CREATE COLLECTIBLES (RSS Badges) ===
-//         this.rssBadges = this.physics.add.group();
-
-//         // Create 20 RSS badges across the level
-//         for (let i = 0; i < 20; i++) {
-//             const x = 150 + i * 40;
-//             const y = 200 + (i % 3) * 50; // Alternate heights
-//             const badge = this.rssBadges.create(x, y, 'rssBadge');
-//             badge.setBounceY(0.3);
-//             badge.setDisplaySize(30, 30);
-//         }
-
-//         // Collide badges with ground
-//         this.physics.add.collider(this.rssBadges, layers.Ground);
-
-//         // === CREATE ENEMIES (Opposition Politicians) ===
-//         this.enemies = this.physics.add.group();
-
-//         // Create 5 enemies
-//         for (let i = 0; i < 5; i++) {
-//             const enemy = this.enemies.create(600 + i * 100, 450, 'enemy-vendor');
-//             enemy.setVelocityX(100);
-//             enemy.setCollideWorldBounds(true);
-//             enemy.setDisplaySize(40, 50);
-//         }
-
-//         // Enemy collision with ground
-//         this.physics.add.collider(this.enemies, layers.Ground);
-
-//         // === SCORE SYSTEM ===
-//         this.score = 0;
-//         this.scoreText = this.add.text(16, 16, 'RSS Badges: 0', {
-//             fontSize: '24px',
-//             fill: '#fff'
-//         });
-
-//         // === LEVEL TITLE ===
-//         this.add.text(300, 30, 'LEVEL 2: RSS Pracharak Path', {
-//             fontSize: '32px',
-//             fill: '#fff',
-//             fontStyle: 'bold'
-//         });
-
-//         // === CONTROLS HINT ===
-//         this.add.text(300, 550, '← → Move | ↑ Jump | Collect RSS Badges', {
-//             fontSize: '18px',
-//             fill: '#aaa'
-//         });
-
-//         // === SOUND SYSTEM ===
-//         this.backgroundMusic = this.sound.play('background', { loop: true });
-
-//         // === CONTROLS ===
-//         this.cursors = this.input.keyboard.createCursorKeys();
-
-//         // === ANIMATIONS ===
-//         this.createAnimations();
-
-//         // === COLLECTIBLE OVERLAP ===
-//         this.physics.add.overlap(this.player, this.rssBadges, (player, badge) => {
-//             badge.disableBody(true, true);
-//             this.score += 1;
-//             this.scoreText.setText('RSS Badges: ' + this.score);
-
-//             // Play collect sound
-//             this.sound.play('collect');
-
-//             // Particle effect
-//             this.createCollectParticle(badge.x, badge.y);
-//         });
-
-//         // === ENEMY COLLISION ===
-//         this.physics.add.collider(this.player, this.enemies, (player, enemy) => {
-//             if (player.isInvincible) {
-//                 enemy.disableBody(true, true);
-//                 this.score += 10;
-//                 this.scoreText.setText('RSS Badges: ' + this.score);
-//             } else {
-//                 enemy.setVelocityX(-enemy.body.velocity.x);
-//                 player.setTint(0xff0000);
-//                 this.score -= 5;
-//                 this.scoreText.setText('RSS Badges: ' + this.score);
-//             }
-//         });
-
-//         // === LEVEL EXIT (Next Level Door) ===
-//         this.levelExit = this.add.image(750, 500, 'platform');
-//         this.levelExit.setDisplaySize(60, 60);
-
-//         this.physics.add.overlap(this.player, this.levelExit, () => {
-//             if (this.score >= 15) {
-//                 this.scene.start('Level3Scene'); // Next level
-//             } else {
-//                 // Show message: Need more badges
-//                 this.showMessage('Need 15 RSS Badges to continue!');
-//             }
-//         });
-//     }
-
-//     createAnimations() {
-//         // Player walk animations
-//         this.anims.create({
-//             key: 'left',
-//             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-//             frameRate: 10,
-//             repeat: -1
-//         });
-
-//         this.anims.create({
-//             key: 'right',
-//             frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-//             frameRate: 10,
-//             repeat: -1
-//         });
-
-//         this.anims.create({
-//             key: 'turn',
-//             frames: this.anims.generateFrameNumbers('player', { start: 4, end: 4 }),
-//             frameRate: 10,
-//             repeat: 0
-//         });
-//     }
-
-//     createCollectParticle(x, y) {
-//         const particles = this.add.particles(x, y, 'rssBadge', {
-//             speed: 100,
-//             scale: { start: 1, end: 0 },
-//             blendMode: 'SCREEN',
-//             quantity: 10
-//         });
-
-//         particles.destroy(500);
-//     }
-
-//     showMessage(message) {
-//         const msg = this.add.text(300, 300, message, {
-//             fontSize: '28px',
-//             fill: '#ff0000',
-//             fontStyle: 'bold',
-//             backgroundColor: '#000'
-//         });
-
-//         this.time.delayedCall(2000, () => {
-//             msg.destroy();
-//         });
-//     }
-
-//     update() {
-//         // === PLAYER MOVEMENT ===
-//         if (this.cursors.left.isDown) {
-//             this.player.setVelocityX(-200);
-//             this.player.anims.play('left', true);
-//         } else if (this.cursors.right.isDown) {
-//             this.player.setVelocityX(200);
-//             this.player.anims.play('right', true);
-//         } else {
-//             this.player.setVelocityX(0);
-//             this.player.anims.play('turn', true);
-//         }
-
-//         // === JUMP ===
-//         if (this.cursors.up.isDown && this.player.body.touching.down) {
-//             this.player.setVelocityY(-500);
-//             this.sound.play('jump');
-//         }
-
-//         // === ENEMY AI ===
-//         this.enemies.children.iterate(enemy => {
-//             // Bounce at edges
-//             if (enemy.body.velocity.x > 0 && enemy.x > this.width - 30) {
-//                 enemy.setVelocityX(-100);
-//             } else if (enemy.body.velocity.x < 0 && enemy.x < 30) {
-//                 enemy.setVelocityX(100);
-//             }
-//         });
-//     }
-// }
-
-// Page 2
-
-// export default Level2Scene;
-
 import { createAnimations } from "../utils/animations.js";
 
-class Level2Scene extends Phaser.Scene {
+export default class Level2Scene extends Phaser.Scene {
   constructor() {
     super({ key: "Level2Scene" });
   }
 
   preload() {
-    this.load.image("player", "assets/sprites/modi-player.png");
-    this.load.image("platform", "assets/sprites/platforms.png");
-    this.load.image("rssBadge", "assets/sprites/rss-badge.png");
-    this.load.audio("jump", "assets/sounds/jump.mp3");
-    this.load.audio("collect", "assets/sounds/collect.mp3");
+    // Dynamic textures are pre-generated in BootScene.
+    // Audio files do not exist in the project, so we don't attempt to load them.
   }
 
   create() {
+    // Background gradient
+    const graphics = this.add.graphics();
+    graphics.fillGradientStyle(0x1a052e, 0x1a052e, 0x050e2e, 0x050e2e, 1);
+    graphics.fillRect(0, 0, 800, 600);
+
     // Create STATIC ground
     const ground = this.physics.add.staticImage(400, 580, "platform");
     ground.setDisplaySize(800, 40);
@@ -279,26 +47,49 @@ class Level2Scene extends Phaser.Scene {
     // Create RSS badges (20 collectibles)
     this.rssBadges = this.physics.add.group();
     for (let i = 0; i < 20; i++) {
-      const x = 150 + i * 35;
+      const x = 150 + i * 32;
       const y = 200 + (i % 4) * 60;
       const badge = this.rssBadges.create(x, y, "rssBadge");
       badge.setBounceY(0.3);
       badge.setDisplaySize(30, 30);
     }
 
+    this.physics.add.collider(this.rssBadges, ground);
+    this.physics.add.collider(this.rssBadges, platform1);
+    this.physics.add.collider(this.rssBadges, platform2);
+    this.physics.add.collider(this.rssBadges, platform3);
+
     // Score
     this.score = 0;
     this.scoreText = this.add.text(16, 16, "RSS Badges: 0", {
       fontSize: "24px",
-      fill: "#fff",
+      fill: "#ff9933", // Saffron
+      fontStyle: "bold",
+      fontFamily: "Courier, Arial, sans-serif"
     });
 
     // Level title
-    this.add.text(300, 30, "LEVEL 2: RSS Pracharak Path", {
+    this.add.text(400, 30, "LEVEL 2: RSS Pracharak Path", {
       fontSize: "32px",
       fill: "#fff",
       fontStyle: "bold",
-    });
+      fontFamily: "Courier, Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    // Help/Controls hint
+    this.controlsText = this.add.text(400, 565, "Collect 15 RSS Badges and reach the Saffron gate to complete the game!", {
+      fontSize: "16px",
+      fill: "#aaaaaa",
+      fontFamily: "Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    // Victory Exit Gate
+    this.exitGate = this.add.rectangle(750, 500, 40, 120, 0xff5500);
+    this.physics.add.existing(this.exitGate, true);
+
+    this.exitOutline = this.add.graphics();
+    this.exitOutline.lineStyle(3, 0xff9933);
+    this.exitOutline.strokeRect(730, 440, 40, 120);
 
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -311,11 +102,86 @@ class Level2Scene extends Phaser.Scene {
       badge.disableBody(true, true);
       this.score++;
       this.scoreText.setText("RSS Badges: " + this.score);
-      this.sound.play("collect");
+      this.safePlaySound("collect");
+
+      if (this.score >= 15) {
+        this.controlsText.setText("Exit unlocked! Head to the rightmost Saffron gate!");
+        this.controlsText.setFill("#00ff00");
+      }
     });
 
-    // Sound
-    this.sound.play("jump");
+    // Exit gate overlap
+    this.physics.add.overlap(this.player, this.exitGate, () => {
+      if (this.score >= 15) {
+        this.showVictoryScreen();
+      } else {
+        this.showPrompt("Collect at least 15 RSS Badges first!");
+      }
+    });
+
+    this.safePlaySound("jump");
+  }
+
+  safePlaySound(key) {
+    if (this.cache.audio.exists(key)) {
+      this.sound.play(key);
+    }
+  }
+
+  showPrompt(msg) {
+    if (this.promptText) this.promptText.destroy();
+    
+    this.promptText = this.add.text(400, 300, msg, {
+      fontSize: "24px",
+      fill: "#ff0000",
+      backgroundColor: "#000000",
+      padding: { x: 15, y: 10 },
+      fontStyle: "bold",
+      fontFamily: "Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    this.time.delayedCall(2000, () => {
+      if (this.promptText) this.promptText.destroy();
+    });
+  }
+
+  showVictoryScreen() {
+    // Stop physics/player
+    this.physics.pause();
+    this.player.setVelocity(0);
+    this.player.anims.play("turn");
+
+    // Victory Banner
+    const victoryBg = this.add.rectangle(400, 300, 500, 300, 0x000000, 0.9);
+    victoryBg.setStrokeStyle(4, 0xffcc00);
+
+    this.add.text(400, 200, "VICTORY!", {
+      fontSize: "48px",
+      fontStyle: "bold",
+      fill: "#00ff00",
+      fontFamily: "Courier, Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    this.add.text(400, 280, "You completed Modi's early journey\nfrom Vadnagar to RSS Pracharak!", {
+      fontSize: "20px",
+      fill: "#ffffff",
+      align: "center",
+      fontFamily: "Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    const restartBtn = this.add.text(400, 380, "PLAY AGAIN", {
+      fontSize: "24px",
+      fontStyle: "bold",
+      fill: "#000000",
+      backgroundColor: "#ff9933",
+      padding: { x: 20, y: 10 },
+      fontFamily: "Courier, Arial, sans-serif"
+    }).setOrigin(0.5);
+
+    restartBtn.setInteractive({ useHandCursor: true });
+    restartBtn.on("pointerdown", () => {
+      this.scene.start("MainMenuScene");
+    });
   }
 
   update() {
@@ -331,10 +197,8 @@ class Level2Scene extends Phaser.Scene {
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-500);
-      this.sound.play("jump");
+      this.player.setVelocityY(-450);
+      this.safePlaySound("jump");
     }
   }
 }
-
-export default Level2Scene;

@@ -22,11 +22,12 @@ export function createAnimations(scene) {
   });
 }
 
+// Examples of usage:
 // In Level1Scene create():
-createAnimations(this);
-
+// createAnimations(this);
+//
 // In Level1Scene update():
-if (this.cursors.left.isDown) {
-  this.player.setVelocityX(-200);
-  this.player.anims.play("left", true);
-}
+// if (this.cursors.left.isDown) {
+//   this.player.setVelocityX(-200);
+//   this.player.anims.play("left", true);
+// }
