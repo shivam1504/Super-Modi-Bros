@@ -32,8 +32,8 @@ export default class BootScene extends Phaser.Scene {
     const frameHeight = 48;
     const totalFrames = 9;
     
-    // Create canvas texture
-    const canvas = this.textures.createCanvas("player", frameWidth * totalFrames, frameHeight);
+    // Create canvas texture with a temporary key
+    const canvas = this.textures.createCanvas("player_temp_canvas", frameWidth * totalFrames, frameHeight);
     const ctx = canvas.context;
 
     for (let i = 0; i < totalFrames; i++) {
