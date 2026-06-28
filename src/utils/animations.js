@@ -1,4 +1,7 @@
 export function createAnimations(scene) {
+  // Guard: Phaser's animation manager is global — only register keys once.
+  if (scene.anims.exists('left')) return;
+
   // Player walk animation
   scene.anims.create({
     key: "left",

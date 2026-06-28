@@ -23,6 +23,9 @@ export default class BootScene extends Phaser.Scene {
     // 4. Generate RSS Badge Texture
     this.generateRSSBadgeTexture();
 
+    // 5. Generate Enemy Texture
+    this.generateEnemyTexture();
+
     // Transition to main menu
     this.scene.start("MainMenuScene");
   }
@@ -225,6 +228,61 @@ export default class BootScene extends Phaser.Scene {
     ctx.lineTo(9, 24);
     ctx.closePath();
     ctx.fill();
+
+    canvas.refresh();
+  }
+
+  generateEnemyTexture() {
+    // A dark-uniformed "bureaucrat" antagonist — 32×48, single static frame.
+    const w = 32, h = 48;
+    const canvas = this.textures.createCanvas('enemy', w, h);
+    const ctx = canvas.context;
+
+    // ── Legs ───────────────────────────────────────────────────────────────
+    ctx.fillStyle = '#2c3020'; // Dark olive trousers
+    ctx.fillRect(9,  34, 6, 8);
+    ctx.fillRect(17, 34, 6, 8);
+
+    // Shoes
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(8,  41, 7, 5);
+    ctx.fillRect(17, 41, 7, 5);
+
+    // ── Body / jacket ──────────────────────────────────────────────────────
+    ctx.fillStyle = '#3a4232'; // Dark khaki-green suit
+    ctx.fillRect(7, 18, 18, 17);
+
+    // White collar / shirt
+    ctx.fillStyle = '#dddddd';
+    ctx.fillRect(13, 17, 6, 5);
+
+    // Red tie
+    ctx.fillStyle = '#bb0000';
+    ctx.fillRect(15, 19, 3, 11);
+    ctx.fillRect(14, 28, 5, 3); // tie knot base
+
+    // ── Face ───────────────────────────────────────────────────────────────
+    ctx.fillStyle = '#c8a882'; // Skin tone
+    ctx.fillRect(9, 6, 14, 13);
+
+    // Dark hair
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(8,  3, 16, 5);
+    ctx.fillRect(8,  6, 3,  6);
+    ctx.fillRect(21, 6, 3,  6);
+
+    // Beady eyes
+    ctx.fillStyle = '#220000';
+    ctx.fillRect(11, 11, 2, 2);
+    ctx.fillRect(19, 11, 2, 2);
+
+    // Frown
+    ctx.strokeStyle = '#553333';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(13, 17);
+    ctx.quadraticCurveTo(16, 15, 19, 17);
+    ctx.stroke();
 
     canvas.refresh();
   }
