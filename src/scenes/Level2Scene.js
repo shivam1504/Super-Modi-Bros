@@ -127,8 +127,6 @@ export default class Level2Scene extends Phaser.Scene {
         this.showPrompt("Collect at least 15 RSS Badges first!");
       }
     });
-
-    this.safePlaySound("jump");
   }
 
   safePlaySound(key) {

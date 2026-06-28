@@ -31,6 +31,7 @@ export default class Level1Scene extends Phaser.Scene {
     this.player = this.physics.add.sprite(100, 450, "player");
     this.player.setBounce(0.1);
     this.player.setCollideWorldBounds(true);
+    this.player.setDisplaySize(40, 60);
 
     // Player physics
     this.player.body.setDrag(100, 0);
