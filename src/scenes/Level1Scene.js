@@ -87,8 +87,8 @@ export default class Level1Scene extends Phaser.Scene {
     });
 
     // ── UI text ───────────────────────────────────────────────────────────────
-    this.add.text(400, 30, "LEVEL 1: Vadnagar Origins", {
-      fontSize: "32px",
+    this.add.text(400, 72, "LEVEL 1: Vadnagar Origins", {
+      fontSize: "26px",
       fill: "#ffffff",
       fontStyle: "bold",
       fontFamily: "Courier, Arial, sans-serif",

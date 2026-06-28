@@ -101,8 +101,8 @@ export default class Level2Scene extends Phaser.Scene {
     });
 
     // ── UI text ───────────────────────────────────────────────────────────────
-    this.add.text(400, 30, "LEVEL 2: RSS Pracharak Path", {
-      fontSize: "32px",
+    this.add.text(400, 72, "LEVEL 2: RSS Pracharak Path", {
+      fontSize: "26px",
       fill: "#fff",
       fontStyle: "bold",
       fontFamily: "Courier, Arial, sans-serif",
